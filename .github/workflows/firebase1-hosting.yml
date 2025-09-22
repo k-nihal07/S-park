@@ -1,50 +1,8 @@
-Ah! That error happens because you tried to **run the workflow file as a command**. `.yml` files are **not commands**, they are configuration files for GitHub Actions.
-
-Here’s what you actually need to do:
-
----
-
-### 1️⃣ Create the folder & file (do **not run it**)
-
-In your S-Park project:
-
-1. Open VS Code or File Explorer.
-2. Create folders:
-
-```
-S-Park
- └─ .github
-      └─ workflows
-```
-
-3. Inside `workflows`, create a file:
-
-```
-firebase-hosting.yml
-```
-
----
-
-### 2️⃣ Paste workflow content
-
-Copy this into `firebase-hosting.yml`:
-
-```yaml
-name: Firebase Hosting CI/CD
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -54,50 +12,12 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npm run build  # remove if not React
+        run: npm run build
 
       - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v1
+        uses: FirebaseExtended/action-hosting-deploy@v0.10.0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
           projectId: studio-9197727945-83c13
-```
-
----
-
-### 3️⃣ Add Firebase secret
-
-1. In Firebase Console → **Project Settings → Service Accounts → Generate new private key** → download JSON.
-2. In GitHub → repo → **Settings → Secrets → Actions → New repository secret**
-
-   * Name: `FIREBASE_SERVICE_ACCOUNT`
-   * Paste the entire JSON content.
-
----
-
-### 4️⃣ Commit & push the workflow
-
-```bash
-git add .github/workflows/firebase1-hosting.yml
-git commit -m "Add Firebase Hosting workflow"
-git push origin main
-```
-
-> This push will **trigger the workflow**, build your project, and deploy to Firebase.
-
----
-
-After it finishes, your prototype will be live at:
-
-```
-https://studio-9197727945-83c13.web.app
-https://studio-9197727945-83c13.firebaseapp.com
-```
-
----
-
-If you want, I can make a **ready-to-copy single block of commands** that creates the folder, adds workflow, sets up secret, and pushes everything so your prototype goes live immediately.
-
-Do you want me to do that?
